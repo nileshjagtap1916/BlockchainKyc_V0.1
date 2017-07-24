@@ -17,19 +17,18 @@ func SaveKycDetails(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	var err error
 	var ok bool
 
-	if len(args) != 5 {
-		return nil, errors.New("Incorrect number of arguments. Need 5 argument")
+	if len(args) != 3 {
+		return nil, errors.New("Incorrect number of arguments. Need 3 arguments")
 	}
 
 	//get data from middle layer
 	KycDetails.USER_ID = args[0]
 	KycDetails.KYC_BANK_NAME = args[1]
 	KycDetails.USER_NAME = args[2]
-	KycDetails.KYC_DOC_BLOB = args[3]
-	KycDetails.KYC_INFO = args[4]
 	CurrentDate := time.Now().Local()
 	KycDetails.KYC_CREATE_DATE = CurrentDate.Format("02 Jan 2006")
 	KycDetails.KYC_VALID_TILL_DATE = CurrentDate.AddDate(1, 0, -1).Format("02 Jan 2006")
+	KycDetails.KYC_STATUS = "Created"
 
 	//save data into blockchain
 	ok, err = InsertKYCDetails(stub, KycDetails)
@@ -51,6 +50,29 @@ func SaveKycDetails(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	}
 
 	return nil, nil
+}
+
+func SaveKycDocument(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var KycDocDetails KycDoc
+	var err error
+	var ok bool
+
+	if len(args) != 3 {
+		return nil, errors.New("Incorrect number of arguments. Need 3 arguments")
+	}
+
+	//get data from middle layer
+	KycDocDetails.USER_ID = args[0]
+	KycDocDetails.DOCUMENT_TYPE = args[1]
+	KycDocDetails.DOCUMENT_BLOB = args[2]
+
+	//save data into blockchain
+	ok, err = InsertKYCDocumentDetails(stub, KycDocDetails)
+	if !ok {
+		return nil, err
+	}
+	return nil, nil
+
 }
 
 func SaveBankDetails(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -253,7 +275,7 @@ func UpdateKyc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) 
 	var err error
 	var ok bool
 
-	if len(args) != 3 {
+	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Need 3 arguments")
 	}
 
@@ -261,7 +283,6 @@ func UpdateKyc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) 
 	KycDetails, _ := GetKYCDetails(stub, args[0])
 
 	KycDetails.USER_NAME = args[1]
-	KycDetails.KYC_DOC_BLOB = args[2]
 	CurrentDate := time.Now().Local()
 	KycDetails.KYC_VALID_TILL_DATE = CurrentDate.AddDate(1, 0, -1).Format("02 Jan 2006")
 

@@ -17,11 +17,20 @@ func CreateDatabase(stub shim.ChaincodeStubInterface) error {
 		&shim.ColumnDefinition{Name: "USER_NAME", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "KYC_CREATE_DATE", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "KYC_VALID_TILL_DATE", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "KYC_DOC_BLOB", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "KYC_INFO", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "KYC_STATUS", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	if err != nil {
 		return errors.New("Failed creating KycDetails table.")
+	}
+
+	//Create table "KycDocDetails"
+	err = stub.CreateTable("KycDocDetails", []*shim.ColumnDefinition{
+		&shim.ColumnDefinition{Name: "USER_ID", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "DOCUMENT_TYPE", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "DOCUMENT_BLOB", Type: shim.ColumnDefinition_STRING, Key: false},
+	})
+	if err != nil {
+		return errors.New("Failed creating KycDocDetails table.")
 	}
 
 	//Create table "BankDetails"
@@ -51,8 +60,17 @@ func InsertKYCDetails(stub shim.ChaincodeStubInterface, Kycdetails KycData) (boo
 			&shim.Column{Value: &shim.Column_String_{String_: Kycdetails.USER_NAME}},
 			&shim.Column{Value: &shim.Column_String_{String_: Kycdetails.KYC_CREATE_DATE}},
 			&shim.Column{Value: &shim.Column_String_{String_: Kycdetails.KYC_VALID_TILL_DATE}},
-			&shim.Column{Value: &shim.Column_String_{String_: Kycdetails.KYC_DOC_BLOB}},
-			&shim.Column{Value: &shim.Column_String_{String_: Kycdetails.KYC_INFO}},
+			&shim.Column{Value: &shim.Column_String_{String_: Kycdetails.KYC_STATUS}},
+		},
+	})
+}
+
+func InsertKYCDocumentDetails(stub shim.ChaincodeStubInterface, KycDocDetails KycDoc) (bool, error) {
+	return stub.InsertRow("KycDocDetails", shim.Row{
+		Columns: []*shim.Column{
+			&shim.Column{Value: &shim.Column_String_{String_: KycDocDetails.USER_ID}},
+			&shim.Column{Value: &shim.Column_String_{String_: KycDocDetails.DOCUMENT_TYPE}},
+			&shim.Column{Value: &shim.Column_String_{String_: KycDocDetails.DOCUMENT_BLOB}},
 		},
 	})
 }
@@ -130,8 +148,6 @@ func GetKYCDetails(stub shim.ChaincodeStubInterface, UserId string) (KycData, er
 	KycDataObj.USER_NAME = row.Columns[2].GetString_()
 	KycDataObj.KYC_CREATE_DATE = row.Columns[3].GetString_()
 	KycDataObj.KYC_VALID_TILL_DATE = row.Columns[4].GetString_()
-	KycDataObj.KYC_DOC_BLOB = row.Columns[5].GetString_()
-	KycDataObj.KYC_INFO = row.Columns[6].GetString_()
 
 	return KycDataObj, nil
 }
@@ -154,13 +170,7 @@ func GetBankSpecificKYCDetails(stub shim.ChaincodeStubInterface, UserId string, 
 	KycDataObj.USER_NAME = row.Columns[2].GetString_()
 	KycDataObj.KYC_CREATE_DATE = row.Columns[3].GetString_()
 	KycDataObj.KYC_VALID_TILL_DATE = row.Columns[4].GetString_()
-	KycDataObj.KYC_DOC_BLOB = row.Columns[5].GetString_()
 
-	if KycDataObj.KYC_BANK_NAME == BankName {
-		KycDataObj.KYC_INFO = row.Columns[6].GetString_()
-	} else {
-		KycDataObj.KYC_INFO = ""
-	}
 	return KycDataObj, nil
 }
 
@@ -203,8 +213,6 @@ func UpdateKycDetails(stub shim.ChaincodeStubInterface, KycDetails KycData) (boo
 			&shim.Column{Value: &shim.Column_String_{String_: KycDetails.USER_NAME}},
 			&shim.Column{Value: &shim.Column_String_{String_: KycDetails.KYC_CREATE_DATE}},
 			&shim.Column{Value: &shim.Column_String_{String_: KycDetails.KYC_VALID_TILL_DATE}},
-			&shim.Column{Value: &shim.Column_String_{String_: KycDetails.KYC_DOC_BLOB}},
-			&shim.Column{Value: &shim.Column_String_{String_: KycDetails.KYC_INFO}},
 		},
 	})
 }

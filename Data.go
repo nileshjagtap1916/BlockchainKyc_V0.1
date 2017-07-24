@@ -6,8 +6,13 @@ type KycData struct {
 	KYC_BANK_NAME       string `json:"KYC_BANK_NAME"`
 	KYC_CREATE_DATE     string `json:"KYC_CREATE_DATE"`
 	KYC_VALID_TILL_DATE string `json:"KYC_VALID_TILL_DATE"`
-	KYC_DOC_BLOB        string `json:"KYC_DOC_BLOB"`
-	KYC_INFO            string `json:"KYC_INFO"`
+	KYC_STATUS          string `json:"KYC_STATUS"`
+}
+
+type KycDoc struct {
+	USER_ID       string `json:"USER_ID"`
+	DOCUMENT_TYPE string `json:"DOCUMENT_TYPE"`
+	DOCUMENT_BLOB string `json:"DOCUMENT_BLOB"`
 }
 
 type KycCount struct {
