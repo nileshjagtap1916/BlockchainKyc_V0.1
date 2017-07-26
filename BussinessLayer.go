@@ -271,6 +271,30 @@ func GetKycCount(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 	return JsonAsBytes, nil
 }
 
+func GetKycDocument(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+	var KycDoc string
+	//var KycDocObj KycDoc
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Need 2 arguments")
+	}
+
+	UserId := args[0]
+	DocumentType := args[1]
+
+	KycDoc, err = GetDocument(stub, UserId, DocumentType)
+	if err != nil {
+		JsonAsBytes1, _ := json.Marshal("Document not exist")
+		return JsonAsBytes1, err
+	}
+
+	JsonAsBytes, _ := json.Marshal(KycDoc)
+
+	return JsonAsBytes, nil
+
+}
+
 func UpdateKyc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 	var ok bool

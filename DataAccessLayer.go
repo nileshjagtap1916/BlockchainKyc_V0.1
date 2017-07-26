@@ -192,6 +192,22 @@ func GetUserList(stub shim.ChaincodeStubInterface, BankName string) ([]string, e
 	return UserList, nil
 }
 
+func GetDocument(stub shim.ChaincodeStubInterface, UserId string, DocumentType string) (string, error) {
+	var columns []shim.Column
+	var err error
+
+	col1 := shim.Column{Value: &shim.Column_String_{String_: UserId}}
+	col2 := shim.Column{Value: &shim.Column_String_{String_: DocumentType}}
+	columns = append(columns, col1)
+	columns = append(columns, col2)
+
+	row, err := stub.GetRow("KycDocDetails", columns)
+	if err != nil {
+		return "", errors.New("Failed to query")
+	}
+	return row.Columns[2].GetString_(), nil
+}
+
 func UpdateBankDetails(stub shim.ChaincodeStubInterface, BankName string, Userlist []string) (bool, error) {
 
 	JsonAsBytes, _ := json.Marshal(Userlist)

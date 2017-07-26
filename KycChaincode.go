@@ -69,6 +69,9 @@ func (t *KycChaincode) Query(stub shim.ChaincodeStubInterface, function string, 
 	} else if function == "GetKycCount" {
 		// get User's KYC Count
 		return GetKycCount(stub, args)
+	} else if function == "GetKycDocument" {
+		// get User's KYC Count
+		return GetKycDocument(stub, args)
 	}
 
 	return nil, nil
