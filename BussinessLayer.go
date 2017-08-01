@@ -137,8 +137,8 @@ func GetKycByUserId(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	UserId := args[0]
 	BankName := args[1]
 	KycDetails, err = GetBankSpecificKYCDetails(stub, UserId, BankName)
-	if err != nil {
-		JsonAsBytes1, _ := json.Marshal("User not exist")
+	if (KycData{}) == KycDetails {
+		JsonAsBytes1, _ := json.Marshal("User KYC is not exist")
 		return JsonAsBytes1, err
 	}
 	KycList = append(KycList, KycDetails)
