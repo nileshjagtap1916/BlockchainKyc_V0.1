@@ -165,6 +165,10 @@ func GetBankSpecificKYCDetails(stub shim.ChaincodeStubInterface, UserId string, 
 		return KycDataObj, errors.New("Failed to query")
 	}
 
+	if row.Columns == nil {
+		return KycDataObj, nil
+	}
+
 	KycDataObj.USER_ID = row.Columns[0].GetString_()
 	KycDataObj.KYC_BANK_NAME = row.Columns[1].GetString_()
 	KycDataObj.USER_NAME = row.Columns[2].GetString_()
