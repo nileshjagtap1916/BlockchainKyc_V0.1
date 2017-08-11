@@ -127,7 +127,6 @@ func GetAllKyc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) 
 func GetKycByUserId(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var KycList []KycData
 	var KycDetails KycData
-	var err error
 
 	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Need 2 argument")
@@ -136,11 +135,12 @@ func GetKycByUserId(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	//get data from middle layer
 	UserId := args[0]
 	BankName := args[1]
-	KycDetails, err = GetBankSpecificKYCDetails(stub, UserId, BankName)
-	if (KycData{}) == KycDetails {
+	KycDetails, _ = GetBankSpecificKYCDetails(stub, UserId, BankName)
+	/*if (KycData{}) == KycDetails {
 		JsonAsBytes1, _ := json.Marshal("User KYC is not exist")
 		return JsonAsBytes1, err
-	}
+	}*/
+
 	KycList = append(KycList, KycDetails)
 	JsonAsBytes, _ := json.Marshal(KycList)
 
